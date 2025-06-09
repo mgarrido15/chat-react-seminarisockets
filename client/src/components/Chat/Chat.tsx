@@ -37,6 +37,19 @@ const Chat: React.FC = () => {
       setMessageList(prev => [...prev, data]);
     });
 
+    socketRef.current.on('user_joined', (data: { message: string; userId: string }) => {
+      setMessageList(prev => [
+        ...prev,
+        {
+          room,
+          author: 'Sistema',
+          message: data.message,
+          time: new Date().toLocaleTimeString(),
+        }
+      ]);
+    });
+
+
     socketRef.current.on('status', (data) => {
       console.debug('Estado recibido:', data);
       if (data.status === 'unauthorized') {
@@ -57,7 +70,7 @@ const Chat: React.FC = () => {
 
   const joinRoom = () => {    
     if (room) {
-      socketRef.current?.emit('join_room', room);
+      socketRef.current?.emit('join_room', room, user.name);
       setShowChat(true);
     }
   };
